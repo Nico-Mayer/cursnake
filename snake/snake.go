@@ -98,3 +98,9 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 
 	return false
 }
+
+func (sb *SnakeBody) CheckFruitCollision(fruitPos geometry.Point) (eaten bool) {
+	head := sb.Parts[len(sb.Parts)-1]
+
+	return head == fruitPos
+}
