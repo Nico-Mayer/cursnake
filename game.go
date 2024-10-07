@@ -9,12 +9,6 @@ import (
 	"github.com/nico-mayer/cursnake/snake"
 )
 
-const (
-	targetFPS  = 144
-	frameTime  = time.Second / targetFPS
-	updateTime = time.Second / 60
-)
-
 type Game struct {
 	Screen    tcell.Screen
 	Score     int
@@ -28,35 +22,32 @@ func (g *Game) Run() {
 	width, height := g.Screen.Size()
 	g.fruit = fruit.NewFruit(width, height, g.snakeBody)
 
-	lastUpdate := time.Now()
-	lastRender := time.Now()
-
 	for {
-		now := time.Now()
+		g.Screen.Clear()
+		g.renderScore("Score: " + strconv.Itoa(g.Score))
 
-		elapsedUpdate := now.Sub(lastUpdate)
-		elapsedRender := now.Sub(lastRender)
-
-		if elapsedUpdate >= updateTime {
-			g.Screen.Clear()
-			fruitEaten := checkFruitCollision(g.snakeBody, g.fruit)
-			if fruitEaten {
-				g.Score += 10
-				g.fruit = fruit.NewFruit(width, height, g.snakeBody)
-			}
-			g.snakeBody.Update(time.Since(lastUpdate), width, height, fruitEaten)
-			lastUpdate = now
+		fruitEaten := checkFruitCollision(g.snakeBody, g.fruit)
+		if fruitEaten {
+			g.Score += 10
+			g.fruit = fruit.NewFruit(width, height, g.snakeBody)
 		}
 
-		if elapsedRender >= frameTime {
-			g.renderScore("Score: " + strconv.Itoa(g.Score))
-			g.snakeBody.Render(g.Screen)
-			g.fruit.Render(g.Screen)
-			g.Screen.Show()
-			lastRender = now
+		g.snakeBody.Update(width, height, fruitEaten)
+		// gameOver := g.snakeBody.CheckSelfCollision()
+		// if gameOver {
+		// 	fmt.Println("Game Over")
+		// }
+		g.snakeBody.Render(g.Screen)
+
+		g.fruit.Render(g.Screen)
+
+		if g.snakeBody.Direction.Y != 0 {
+			time.Sleep(60 * time.Millisecond)
+		} else {
+			time.Sleep(40 * time.Millisecond)
 		}
 
-		time.Sleep(time.Until(lastRender.Add(frameTime)))
+		g.Screen.Show()
 	}
 }
 

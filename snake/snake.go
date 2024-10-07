@@ -1,18 +1,14 @@
 package snake
 
 import (
-	"time"
-
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/geometry"
 )
 
 type SnakeBody struct {
-	Parts       []geometry.Point
-	Direction   geometry.Point
-	style       tcell.Style
-	lastMove    time.Duration
-	updateDelay time.Duration
+	Parts     []geometry.Point
+	Direction geometry.Point
+	style     tcell.Style
 }
 
 var (
@@ -20,9 +16,6 @@ var (
 	Down  = geometry.Point{X: 0, Y: 1}
 	Left  = geometry.Point{X: -1, Y: 0}
 	Right = geometry.Point{X: 1, Y: 0}
-
-	SPEED_X = time.Millisecond * 60
-	SPEED_Y = time.Millisecond * 85
 )
 
 func NewSnakeBody(startX, startY, length int) *SnakeBody {
@@ -32,21 +25,9 @@ func NewSnakeBody(startX, startY, length int) *SnakeBody {
 	}
 
 	return &SnakeBody{
-		Parts:       parts,
-		Direction:   Right,
-		style:       tcell.StyleDefault.Background(tcell.ColorGreen).Foreground(tcell.ColorWhite),
-		updateDelay: SPEED_X,
-	}
-}
-
-func (sb *SnakeBody) setDirection(newDirection geometry.Point) {
-	if newDirection.X != -sb.Direction.X && newDirection.Y != -sb.Direction.Y {
-		sb.Direction = newDirection
-	}
-	if sb.Direction.X != 0 {
-		sb.updateDelay = SPEED_X
-	} else {
-		sb.updateDelay = SPEED_Y
+		Parts:     parts,
+		Direction: Right,
+		style:     tcell.StyleDefault.Background(tcell.ColorGreen).Foreground(tcell.ColorGreen),
 	}
 }
 
@@ -63,18 +44,16 @@ func (sb *SnakeBody) Right() {
 	sb.setDirection(Right)
 }
 
-func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
-
-	sb.lastMove += delta
-
-	if sb.lastMove <= sb.updateDelay && !grow {
-		return
+func (sb *SnakeBody) setDirection(newDirection geometry.Point) {
+	if newDirection.X != -sb.Direction.X && newDirection.Y != -sb.Direction.Y {
+		sb.Direction = newDirection
 	}
+}
 
+func (sb *SnakeBody) Update(width, height int, grow bool) {
 	head := sb.Parts[len(sb.Parts)-1]
 	newHead := head.Add(sb.Direction).Mod(width, height)
 	sb.Parts = append(sb.Parts, newHead)
-	sb.lastMove -= sb.updateDelay
 
 	if !grow {
 		sb.Parts = sb.Parts[1:]
@@ -96,5 +75,6 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 			return true
 		}
 	}
+
 	return false
 }
