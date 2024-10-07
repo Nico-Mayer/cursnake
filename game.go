@@ -9,6 +9,8 @@ import (
 	"github.com/nico-mayer/cursnake/snake"
 )
 
+const frameRate = time.Second / 25
+
 type Game struct {
 	Screen    tcell.Screen
 	Score     int
@@ -21,33 +23,28 @@ func (g *Game) Run() {
 	g.Screen.SetStyle(defStyle)
 	width, height := g.Screen.Size()
 	g.fruit = fruit.NewFruit(width, height, g.snakeBody)
+	lastUpdate := time.Now()
 
 	for {
+		delta := time.Since(lastUpdate)
 		g.Screen.Clear()
-		g.renderScore("Score: " + strconv.Itoa(g.Score))
 
+		// Update
 		fruitEaten := checkFruitCollision(g.snakeBody, g.fruit)
 		if fruitEaten {
 			g.Score += 10
 			g.fruit = fruit.NewFruit(width, height, g.snakeBody)
 		}
+		g.snakeBody.Update(delta, width, height, fruitEaten)
 
-		g.snakeBody.Update(width, height, fruitEaten)
-		// gameOver := g.snakeBody.CheckSelfCollision()
-		// if gameOver {
-		// 	fmt.Println("Game Over")
-		// }
+		// Render
+		g.renderScore("Score: " + strconv.Itoa(g.Score))
 		g.snakeBody.Render(g.Screen)
-
 		g.fruit.Render(g.Screen)
-
-		if g.snakeBody.Direction.Y != 0 {
-			time.Sleep(60 * time.Millisecond)
-		} else {
-			time.Sleep(40 * time.Millisecond)
-		}
-
 		g.Screen.Show()
+
+		lastUpdate = time.Now()
+		time.Sleep(frameRate)
 	}
 }
 

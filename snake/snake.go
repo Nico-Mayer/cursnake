@@ -1,14 +1,18 @@
 package snake
 
 import (
+	"time"
+
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/geometry"
 )
 
 type SnakeBody struct {
-	Parts     []geometry.Point
-	Direction geometry.Point
-	style     tcell.Style
+	Parts         []geometry.Point
+	Direction     geometry.Point
+	style         tcell.Style
+	lastMove      time.Duration
+	movementDelay time.Duration
 }
 
 var (
@@ -16,6 +20,9 @@ var (
 	Down  = geometry.Point{X: 0, Y: 1}
 	Left  = geometry.Point{X: -1, Y: 0}
 	Right = geometry.Point{X: 1, Y: 0}
+
+	X_SPEED = 40 * time.Millisecond
+	Y_SPEED = 80 * time.Millisecond
 )
 
 func NewSnakeBody(startX, startY, length int) *SnakeBody {
@@ -25,12 +32,24 @@ func NewSnakeBody(startX, startY, length int) *SnakeBody {
 	}
 
 	return &SnakeBody{
-		Parts:     parts,
-		Direction: Right,
-		style:     tcell.StyleDefault.Background(tcell.ColorGreen).Foreground(tcell.ColorGreen),
+		Parts:         parts,
+		Direction:     Right,
+		style:         tcell.StyleDefault.Background(tcell.ColorGreen).Foreground(tcell.ColorGreen),
+		movementDelay: X_SPEED,
 	}
 }
 
+func (sb *SnakeBody) setDirection(newDirection geometry.Point) {
+	if newDirection.Y != 0 {
+		sb.movementDelay = Y_SPEED
+	} else {
+		sb.movementDelay = X_SPEED
+	}
+
+	if newDirection.X != -sb.Direction.X && newDirection.Y != -sb.Direction.Y {
+		sb.Direction = newDirection
+	}
+}
 func (sb *SnakeBody) Up() {
 	sb.setDirection(Up)
 }
@@ -44,16 +63,17 @@ func (sb *SnakeBody) Right() {
 	sb.setDirection(Right)
 }
 
-func (sb *SnakeBody) setDirection(newDirection geometry.Point) {
-	if newDirection.X != -sb.Direction.X && newDirection.Y != -sb.Direction.Y {
-		sb.Direction = newDirection
-	}
-}
+func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
+	sb.lastMove += delta
 
-func (sb *SnakeBody) Update(width, height int, grow bool) {
+	if sb.lastMove <= sb.movementDelay && !grow {
+		return
+	}
+
 	head := sb.Parts[len(sb.Parts)-1]
 	newHead := head.Add(sb.Direction).Mod(width, height)
 	sb.Parts = append(sb.Parts, newHead)
+	sb.lastMove -= sb.movementDelay
 
 	if !grow {
 		sb.Parts = sb.Parts[1:]
