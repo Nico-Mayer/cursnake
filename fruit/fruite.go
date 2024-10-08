@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/gdamore/tcell"
-	"github.com/nico-mayer/cursnake/geometry"
+	"github.com/nico-mayer/cursnake/internal/geometry"
 	"github.com/nico-mayer/cursnake/snake"
 )
 

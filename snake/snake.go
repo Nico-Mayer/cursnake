@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell"
-	"github.com/nico-mayer/cursnake/geometry"
+	"github.com/nico-mayer/cursnake/internal/geometry"
 )
 
 type SnakeBody struct {
@@ -21,8 +21,8 @@ var (
 	Left  = geometry.Point{X: -1, Y: 0}
 	Right = geometry.Point{X: 1, Y: 0}
 
-	X_SPEED = 40 * time.Millisecond
-	Y_SPEED = 80 * time.Millisecond
+	X_SPEED = 35 * time.Millisecond
+	Y_SPEED = 60 * time.Millisecond
 )
 
 func NewSnakeBody(startX, startY, length int) *SnakeBody {

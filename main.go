@@ -15,7 +15,7 @@ type Cursnake struct {
 }
 
 const (
-	frameRate = time.Second / 144
+	targetFPS = time.Second / 60
 )
 
 func main() {
@@ -52,15 +52,21 @@ func main() {
 	}
 }
 
-func (g *Cursnake) Run() {
+func (cursnake *Cursnake) Run() {
 	lastUpdate := time.Now()
 
+	// Gameloop
 	for {
-		g.currentGameState.Update(time.Since(lastUpdate), g.screen)
+		delta := time.Since(lastUpdate)
+		newState, changeState := cursnake.currentGameState.Update(delta, cursnake.screen)
+		if changeState && newState != nil {
+			cursnake.currentGameState = newState
+		}
 		lastUpdate = time.Now()
 
-		g.currentGameState.Draw(g.screen)
+		// Draw
+		cursnake.currentGameState.Draw(cursnake.screen)
 
-		time.Sleep(frameRate)
+		time.Sleep(targetFPS)
 	}
 }

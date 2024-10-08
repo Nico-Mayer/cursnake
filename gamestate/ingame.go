@@ -6,6 +6,7 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/fruit"
+	"github.com/nico-mayer/cursnake/internal/utils"
 	"github.com/nico-mayer/cursnake/snake"
 )
 
@@ -17,7 +18,7 @@ type InGameState struct {
 
 func NewInGameState(screen tcell.Screen) *InGameState {
 	width, height := screen.Size()
-	snakeBody := snake.NewSnakeBody(5, 10, 4)
+	snakeBody := snake.NewSnakeBody(5, 10, 49)
 
 	return &InGameState{
 		score:     0,
@@ -26,20 +27,27 @@ func NewInGameState(screen tcell.Screen) *InGameState {
 	}
 }
 
-func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) {
+func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameState, bool) {
 	width, height := screen.Size()
 
 	fruitEaten := s.snakeBody.CheckFruitCollision(s.fruit.Position)
+	gameOver := s.snakeBody.CheckSelfCollision()
+	if gameOver {
+		newState := NewGameOverState()
+		return newState, true
+	}
+
 	if fruitEaten {
 		s.score += 10
 		s.fruit = fruit.NewFruit(width, height, s.snakeBody)
 	}
 	s.snakeBody.Update(delta, width, height, fruitEaten)
+	return nil, false
 }
 
 func (s *InGameState) Draw(screen tcell.Screen) {
 	screen.Clear()
-	renderScore("Score: "+strconv.Itoa(s.score), screen)
+	utils.DrawText(1, 1, "Score: "+strconv.Itoa(s.score), screen, tcell.ColorWhite)
 	s.snakeBody.Render(screen)
 	s.fruit.Render(screen)
 	screen.Show()
@@ -54,15 +62,5 @@ func (s *InGameState) HandleInput(event *tcell.EventKey) {
 		s.snakeBody.Left()
 	} else if event.Key() == tcell.KeyRight || event.Rune() == 'd' {
 		s.snakeBody.Right()
-	}
-}
-
-func renderScore(text string, s tcell.Screen) {
-	row := 1
-	col := 1
-	style := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
-	for _, r := range text {
-		s.SetContent(col, row, r, nil, style)
-		col++
 	}
 }
