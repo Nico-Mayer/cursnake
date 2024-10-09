@@ -50,6 +50,7 @@ func main() {
 }
 
 func (cursnake *Cursnake) Run() {
+	frameTime := time.Second / time.Duration(*settings.GetSettings().TargetFPS)
 	lastUpdate := time.Now()
 
 	// Gameloop
@@ -64,6 +65,6 @@ func (cursnake *Cursnake) Run() {
 		// Draw
 		cursnake.currentGameState.Draw(cursnake.screen)
 
-		time.Sleep(settings.GetSettings().FrameRate)
+		time.Sleep(frameTime)
 	}
 }

@@ -1,0 +1,7 @@
+{
+  "TargetFPS": 60,
+  "Sound": true,
+  "CheckerboardBackground": true,
+  "NumberOfFruits": 5,
+  "OpenWalls": true
+}

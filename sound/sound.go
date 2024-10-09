@@ -48,7 +48,7 @@ func newSoundManager() *SoundManager {
 }
 
 func (sm *SoundManager) Play(fileName string) {
-	if !settings.GetSettings().Sound {
+	if !*settings.GetSettings().Sound {
 		return
 	}
 

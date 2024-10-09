@@ -75,7 +75,7 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 
 	head := sb.Parts[len(sb.Parts)-1]
 	newHead := head.Add(sb.Direction)
-	if settings.GetSettings().OpenWalls {
+	if *settings.GetSettings().OpenWalls {
 		newHead = newHead.Mod(width, height)
 	}
 	sb.Parts = append(sb.Parts, newHead)
@@ -114,7 +114,7 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 }
 
 func (sb *SnakeBody) CheckWallCollision(screen tcell.Screen) (collided bool) {
-	if settings.GetSettings().OpenWalls {
+	if *settings.GetSettings().OpenWalls {
 		return false
 	}
 
