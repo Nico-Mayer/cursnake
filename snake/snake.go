@@ -48,6 +48,7 @@ func (sb *SnakeBody) setDirection(newDirection geometry.Point) {
 	}
 
 	if newDirection.X != -sb.Direction.X && newDirection.Y != -sb.Direction.Y {
+		go sound.GetManager().Play("move.mp3")
 		sb.Direction = newDirection
 	}
 }
