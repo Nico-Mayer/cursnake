@@ -25,9 +25,6 @@ func main() {
 	}
 	defer screen.Fini()
 
-	defStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
-	screen.SetStyle(defStyle)
-
 	cursnake := &Cursnake{
 		screen:           screen,
 		currentGameState: gamestate.NewInGameState(screen),

@@ -40,7 +40,7 @@ func newFruit(screen tcell.Screen, invalidPoints []geometry.Point) *Fruit {
 
 	return &Fruit{
 		Position: geometry.Point{X: x, Y: y},
-		Style:    tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorRed),
+		Style:    tcell.StyleDefault.Foreground(tcell.ColorRed),
 	}
 }
 
