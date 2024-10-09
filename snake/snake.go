@@ -83,8 +83,16 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 }
 
 func (sb *SnakeBody) Render(screen tcell.Screen) {
-	for _, part := range sb.Parts {
-		screen.SetContent(part.X, part.Y, ' ', nil, sb.style)
+	maxGreen := int32(255)
+	minGreen := int32(30)
+
+	for i, part := range sb.Parts {
+		green := int32(minGreen) + int32(i*3)
+		if green > maxGreen {
+			green = maxGreen
+		}
+		screen.SetContent(part.X, part.Y, ' ', nil,
+			tcell.StyleDefault.Background(tcell.NewRGBColor(0, green, 0)))
 	}
 }
 

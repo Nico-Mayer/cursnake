@@ -19,7 +19,7 @@ type InGameState struct {
 
 func NewInGameState(screen tcell.Screen) *InGameState {
 	width, height := screen.Size()
-	snakeBody := snake.NewSnakeBody(5, 10, 4)
+	snakeBody := snake.NewSnakeBody(5, 10, 73)
 
 	return &InGameState{
 		score:     0,
