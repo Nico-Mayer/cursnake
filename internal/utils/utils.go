@@ -2,6 +2,8 @@ package utils
 
 import (
 	"math/rand"
+	"strconv"
+	"strings"
 
 	"github.com/gdamore/tcell"
 )
@@ -30,4 +32,15 @@ func Clamp(min, value, max int) int {
 
 func RandRange(min, max int) int {
 	return rand.Intn(max-min) + min
+}
+
+func HexColorToInt32(hexColor string) (int32, error) {
+	hexColor = strings.TrimPrefix(hexColor, "#")
+
+	parsedValue, err := strconv.ParseInt(hexColor, 16, 32)
+	if err != nil {
+		return 0, err
+	}
+
+	return int32(parsedValue), nil
 }

@@ -3,6 +3,7 @@ package settings
 import (
 	_ "embed"
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -12,11 +13,17 @@ import (
 var defaultSettingsData []byte
 
 type CursnakeSettings struct {
-	TargetFPS              *int  `json:"TargetFPS"`
-	Sound                  *bool `json:"Sound"`
-	CheckerboardBackground *bool `json:"CheckerboardBackground"`
-	NumberOfFruits         *int  `json:"NumberOfFruits"`
-	OpenWalls              *bool `json:"OpenWalls"`
+	TargetFPS              int              `json:"targetFPS"`
+	Mute                   bool             `json:"mute"`
+	CheckerboardBackground bool             `json:"checkerboardBackground"`
+	NumberOfFruits         int              `json:"numberOfFruits"`
+	OpenWalls              bool             `json:"openWalls"`
+	SnakeBodyOptions       SnakeBodyOptions `json:"snakeBody"`
+}
+
+type SnakeBodyOptions struct {
+	Foreground string `json:"foreground"`
+	Background string `json:"background"`
 }
 
 var settings *CursnakeSettings
@@ -30,84 +37,51 @@ func GetSettings() *CursnakeSettings {
 }
 
 func newCursnakeSettings() *CursnakeSettings {
-	defaultSetting := loadDefaultSettings()
-	userSettings := loadUserSettings()
 
-	mergedSettings := mergeSettings(defaultSetting, userSettings)
+	userSettingsFile := loadUserSettings()
+
+	var data1, data2 map[string]interface{}
+
+	if err := json.Unmarshal(defaultSettingsData, &data1); err != nil {
+		log.Fatalf("Error unmarshalling file1: %v", err)
+	}
+	if err := json.Unmarshal(userSettingsFile, &data2); err != nil {
+		data2 = data1
+	}
+
+	mergedData := mergeMaps(data1, data2)
+
+	mergedJSON, err := json.MarshalIndent(mergedData, "", "  ")
+	if err != nil {
+		log.Fatalf("Error marshalling merged data: %v", err)
+	}
+
+	var mergedSettings CursnakeSettings
+	if err := json.Unmarshal(mergedJSON, &mergedSettings); err != nil {
+		log.Fatalf("Error unmarshalling into struct: %v", err)
+	}
 
 	// Windows-specific defaults
 	if runtime.GOOS == "windows" {
-		mergedSettings.CheckerboardBackground = boolPointer(false)
-		mergedSettings.TargetFPS = intPointer(25)
+		mergedSettings.CheckerboardBackground = false
+		mergedSettings.TargetFPS = 25
 	}
 
-	return mergedSettings
+	return &mergedSettings
 }
 
-func loadDefaultSettings() *CursnakeSettings {
-	var defaultConfig CursnakeSettings
-	if err := json.Unmarshal(defaultSettingsData, &defaultConfig); err != nil {
-		panic("failed to load default settings")
-	}
-
-	return &defaultConfig
-}
-
-func loadUserSettings() *CursnakeSettings {
+func loadUserSettings() []byte {
 	userSettingsPath := filepath.Join(os.Getenv("HOME"), ".config", "cursnake", "settings.json")
 	userSettingsFile, err := os.ReadFile(userSettingsPath)
 	if err != nil {
-		return &CursnakeSettings{}
+		return defaultSettingsData
 	}
-
-	var userSettings CursnakeSettings
-	if err := json.Unmarshal(userSettingsFile, &userSettings); err != nil {
-		return &CursnakeSettings{}
-	}
-
-	return &userSettings
+	return userSettingsFile
 }
 
-func mergeSettings(defaultSettings, userSettings *CursnakeSettings) *CursnakeSettings {
-	merged := &CursnakeSettings{}
-
-	if userSettings.TargetFPS != nil {
-		merged.TargetFPS = userSettings.TargetFPS
-	} else {
-		merged.TargetFPS = defaultSettings.TargetFPS
+func mergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
+	for k, v := range map2 {
+		map1[k] = v
 	}
-
-	if userSettings.NumberOfFruits != nil {
-		merged.NumberOfFruits = userSettings.NumberOfFruits
-	} else {
-		merged.NumberOfFruits = defaultSettings.NumberOfFruits
-	}
-
-	if userSettings.Sound != nil {
-		merged.Sound = userSettings.Sound
-	} else {
-		merged.Sound = defaultSettings.Sound
-	}
-
-	if userSettings.CheckerboardBackground != nil {
-		merged.CheckerboardBackground = userSettings.CheckerboardBackground
-	} else {
-		merged.CheckerboardBackground = defaultSettings.CheckerboardBackground
-	}
-
-	if userSettings.OpenWalls != nil {
-		merged.OpenWalls = userSettings.OpenWalls
-	} else {
-		merged.OpenWalls = defaultSettings.OpenWalls
-	}
-
-	return merged
-}
-
-func intPointer(i int) *int {
-	return &i
-}
-
-func boolPointer(b bool) *bool {
-	return &b
+	return map1
 }

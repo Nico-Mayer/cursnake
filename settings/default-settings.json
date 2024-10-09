@@ -1,7 +1,11 @@
 {
-  "TargetFPS": 60,
-  "Sound": true,
-  "CheckerboardBackground": true,
-  "NumberOfFruits": 5,
-  "OpenWalls": true
+  "targetFps": 60,
+  "mute": false,
+  "checkerboardBackground": true,
+  "numberOfFruits": 5,
+  "openWalls": true,
+  "snakeBody": {
+    "foreground": "#fff000",
+    "background": "#1DF529"
+  }
 }

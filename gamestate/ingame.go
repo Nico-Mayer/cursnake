@@ -20,8 +20,8 @@ type InGameState struct {
 }
 
 func NewInGameState(screen tcell.Screen) *InGameState {
-	snakeBody := snake.NewSnakeBody(5, 10, 4)
-	fruitsCollection := fruit.NewFruitCollection(*settings.GetSettings().NumberOfFruits, snakeBody, screen)
+	snakeBody := snake.NewSnakeBody(5, 10, 170)
+	fruitsCollection := fruit.NewFruitCollection(settings.GetSettings().NumberOfFruits, snakeBody, screen)
 
 	return &InGameState{
 		score:            0,
@@ -78,7 +78,7 @@ func (s *InGameState) HandleInput(event *tcell.EventKey) {
 }
 
 func drawCheckerboard(screen tcell.Screen) {
-	if !*settings.GetSettings().CheckerboardBackground {
+	if !settings.GetSettings().CheckerboardBackground {
 		return
 	}
 	width, height := screen.Size()
@@ -93,7 +93,7 @@ func drawCheckerboard(screen tcell.Screen) {
 }
 
 func drawGameBorder(screen tcell.Screen) {
-	if *settings.GetSettings().OpenWalls {
+	if settings.GetSettings().OpenWalls {
 		return
 	}
 	width, height := screen.Size()

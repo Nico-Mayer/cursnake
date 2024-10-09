@@ -50,7 +50,7 @@ func main() {
 }
 
 func (cursnake *Cursnake) Run() {
-	frameTime := time.Second / time.Duration(*settings.GetSettings().TargetFPS)
+	frameTime := time.Second / time.Duration(settings.GetSettings().TargetFPS)
 	lastUpdate := time.Now()
 
 	// Gameloop

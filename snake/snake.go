@@ -5,6 +5,7 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/internal/geometry"
+	"github.com/nico-mayer/cursnake/internal/utils"
 	"github.com/nico-mayer/cursnake/settings"
 	"github.com/nico-mayer/cursnake/sound"
 )
@@ -75,7 +76,7 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 
 	head := sb.Parts[len(sb.Parts)-1]
 	newHead := head.Add(sb.Direction)
-	if *settings.GetSettings().OpenWalls {
+	if settings.GetSettings().OpenWalls {
 		newHead = newHead.Mod(width, height)
 	}
 	sb.Parts = append(sb.Parts, newHead)
@@ -87,16 +88,21 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 }
 
 func (sb *SnakeBody) Render(screen tcell.Screen) {
-	maxGreen := int32(255)
-	minGreen := int32(80)
+	background, _ := utils.HexColorToInt32(settings.GetSettings().SnakeBodyOptions.Background)
+
+	totalParts := len(sb.Parts)
 
 	for i, part := range sb.Parts {
-		green := int32(minGreen) + int32(i*2)
-		if green > maxGreen {
-			green = maxGreen
-		}
+		reversedIndex := int32(totalParts - 1 - i)
+
+		r, g, b := tcell.NewHexColor(background).RGB()
+
+		r = int32(utils.Clamp(80, int(r-(reversedIndex*2)), 255))
+		g = int32(utils.Clamp(80, int(g-(reversedIndex*2)), 255))
+		b = int32(utils.Clamp(80, int(b-(reversedIndex*2)), 255))
+
 		screen.SetContent(part.X, part.Y, ' ', nil,
-			tcell.StyleDefault.Background(tcell.NewRGBColor(0, green, 0)))
+			tcell.StyleDefault.Background(tcell.NewRGBColor(r, g, b)))
 	}
 }
 
@@ -114,7 +120,7 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 }
 
 func (sb *SnakeBody) CheckWallCollision(screen tcell.Screen) (collided bool) {
-	if *settings.GetSettings().OpenWalls {
+	if settings.GetSettings().OpenWalls {
 		return false
 	}
 
