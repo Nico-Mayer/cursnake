@@ -10,6 +10,7 @@ import (
 	"github.com/nico-mayer/cursnake/internal/utils"
 	"github.com/nico-mayer/cursnake/settings"
 	"github.com/nico-mayer/cursnake/snake"
+	"github.com/nico-mayer/cursnake/sound"
 )
 
 type InGameState struct {
@@ -19,7 +20,7 @@ type InGameState struct {
 }
 
 func NewInGameState(screen tcell.Screen) *InGameState {
-	snakeBody := snake.NewSnakeBody(5, 10, 73)
+	snakeBody := snake.NewSnakeBody(5, 10, 4)
 	fruitsCollection := fruit.NewFruitCollection(settings.GetSettings().NumberOfFruits, snakeBody, screen)
 
 	return &InGameState{
@@ -32,24 +33,16 @@ func NewInGameState(screen tcell.Screen) *InGameState {
 func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameState, bool) {
 	width, height := screen.Size()
 
-	var fruitEaten bool
-	for _, f := range s.fruitsCollection.Fruits {
-		fruitEaten = s.snakeBody.CheckFruitCollision(f.Position)
-		if fruitEaten {
-			s.score += 10
-			var invalidPoints []geometry.Point
-
-			for _, part := range s.snakeBody.Parts {
-				invalidPoints = append(invalidPoints, part)
-			}
-
-			for _, fruit := range s.fruitsCollection.Fruits {
-				invalidPoints = append(invalidPoints, fruit.Position)
-			}
-
-			f.Respawn(screen, invalidPoints)
-			break
-		}
+	fruitEaten, fruit := s.fruitsCollection.CheckCollision(s.snakeBody.GetHead())
+	if fruitEaten {
+		s.score += 10
+		sb := sound.GetManager()
+		go sb.Play("pick.mp3")
+		invalidPoints := append(
+			append([]geometry.Point{}, s.snakeBody.Parts...),
+			s.fruitsCollection.FruitPositions()...,
+		)
+		fruit.Respawn(screen, invalidPoints)
 	}
 
 	gameOver := s.snakeBody.CheckSelfCollision()

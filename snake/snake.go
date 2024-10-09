@@ -109,14 +109,6 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 	return false
 }
 
-func (sb *SnakeBody) CheckFruitCollision(fruitPos geometry.Point) (eaten bool) {
-	head := sb.Parts[len(sb.Parts)-1]
-
-	if head == fruitPos {
-		sb := sound.GetManager()
-		go sb.Play("pick.mp3")
-		return true
-	}
-
-	return false
+func (sb *SnakeBody) GetHead() geometry.Point {
+	return sb.Parts[len(sb.Parts)-1]
 }

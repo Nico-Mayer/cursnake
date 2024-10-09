@@ -58,6 +58,23 @@ func (fc *FruitCollection) Render(screen tcell.Screen) {
 	}
 }
 
+func (fc *FruitCollection) FruitPositions() []geometry.Point {
+	var positions []geometry.Point
+	for _, fruit := range fc.Fruits {
+		positions = append(positions, fruit.Position)
+	}
+	return positions
+}
+
+func (fc *FruitCollection) CheckCollision(snakeHead geometry.Point) (bool, *Fruit) {
+	for _, fruit := range fc.Fruits {
+		if fruit.Position == snakeHead {
+			return true, fruit
+		}
+	}
+	return false, nil
+}
+
 func (f *Fruit) Respawn(screen tcell.Screen, invalidPoints []geometry.Point) {
 	width, height := screen.Size()
 	xPos := rand.Intn(width)
