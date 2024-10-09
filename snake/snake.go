@@ -84,10 +84,10 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 
 func (sb *SnakeBody) Render(screen tcell.Screen) {
 	maxGreen := int32(255)
-	minGreen := int32(30)
+	minGreen := int32(80)
 
 	for i, part := range sb.Parts {
-		green := int32(minGreen) + int32(i*3)
+		green := int32(minGreen) + int32(i*2)
 		if green > maxGreen {
 			green = maxGreen
 		}

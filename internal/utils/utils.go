@@ -16,3 +16,12 @@ func DrawTextCenter(row, col int, text string, screen tcell.Screen, color tcell.
 	col = col - len(text)/2
 	DrawText(row, col, text, screen, color)
 }
+
+func Clamp(min, value, max int) int {
+	if value < min {
+		return min
+	} else if value > max {
+		return max
+	}
+	return value
+}

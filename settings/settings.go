@@ -10,7 +10,7 @@ type CursnakeSettings struct {
 	FrameRate              time.Duration
 	Sound                  bool
 	CheckerboardBackground bool
-	MultipleFruits         bool
+	NumberOfFruits         int
 	OpenWalls              bool
 }
 
@@ -25,7 +25,7 @@ func newCursnakeSettings() *CursnakeSettings {
 	frameRate := time.Second / 60
 	sound := true
 	checkerboardBG := true
-	multipleFruits := false
+	numberOfFruits := 5
 	openWalls := true
 
 	if system == "windows" {
@@ -38,7 +38,7 @@ func newCursnakeSettings() *CursnakeSettings {
 		FrameRate:              frameRate,
 		Sound:                  sound,
 		CheckerboardBackground: checkerboardBG,
-		MultipleFruits:         multipleFruits,
+		NumberOfFruits:         numberOfFruits,
 		OpenWalls:              openWalls,
 	}
 }

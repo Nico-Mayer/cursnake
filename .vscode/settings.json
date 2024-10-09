@@ -5,6 +5,7 @@
     "Gameloop",
     "gamestate",
     "hajimehoshi",
+    "Respawn",
     "tcell"
   ]
 }
