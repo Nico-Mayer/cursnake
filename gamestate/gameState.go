@@ -7,7 +7,7 @@ import (
 )
 
 type GameState interface {
-	Update(time.Duration, tcell.Screen) (newState GameState, changeState bool)
+	Update(time.Duration, tcell.Screen) (newState GameState)
 	Draw(tcell.Screen)
 	HandleInput(*tcell.EventKey)
 }

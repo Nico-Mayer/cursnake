@@ -30,7 +30,7 @@ func NewInGameState(screen tcell.Screen) *InGameState {
 	}
 }
 
-func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameState, bool) {
+func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) GameState {
 	width, height := screen.Size()
 
 	fruitEaten, fruit := s.fruitsCollection.CheckCollision(s.snakeBody.GetHead())
@@ -48,11 +48,11 @@ func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameStat
 	gameOver := s.snakeBody.CheckSelfCollision() || s.snakeBody.CheckWallCollision(screen)
 	if gameOver {
 		newState := NewGameOverState()
-		return newState, true
+		return newState
 	}
 
 	s.snakeBody.Update(delta, width, height, fruitEaten)
-	return nil, false
+	return nil
 }
 
 func (s *InGameState) Draw(screen tcell.Screen) {

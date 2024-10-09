@@ -21,13 +21,13 @@ func NewGameOverState() *GameOverState {
 	}
 }
 
-func (s *GameOverState) Update(delta time.Duration, screen tcell.Screen) (GameState, bool) {
+func (s *GameOverState) Update(delta time.Duration, screen tcell.Screen) GameState {
 	if len(s.selectedOption) != 0 {
 		switch s.selectedOption {
 		case "Restart":
 			{
 				newState := NewInGameState(screen)
-				return newState, true
+				return newState
 			}
 		case "Exit":
 			{
@@ -36,7 +36,7 @@ func (s *GameOverState) Update(delta time.Duration, screen tcell.Screen) (GameSt
 			}
 		}
 	}
-	return nil, false
+	return nil
 }
 
 func (s *GameOverState) Draw(screen tcell.Screen) {

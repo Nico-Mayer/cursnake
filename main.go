@@ -55,8 +55,8 @@ func (cursnake *Cursnake) Run() {
 	// Gameloop
 	for {
 		delta := time.Since(lastUpdate)
-		newState, changeState := cursnake.currentGameState.Update(delta, cursnake.screen)
-		if changeState && newState != nil {
+		newState := cursnake.currentGameState.Update(delta, cursnake.screen)
+		if newState != nil {
 			cursnake.currentGameState = newState
 		}
 		lastUpdate = time.Now()
