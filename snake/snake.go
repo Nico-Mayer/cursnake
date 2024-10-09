@@ -105,7 +105,7 @@ func (sb *SnakeBody) CheckFruitCollision(fruitPos geometry.Point) (eaten bool) {
 
 	if head == fruitPos {
 		sb := sound.GetManager()
-		go sb.Play("gunshot.mp3")
+		go sb.Play("pick.mp3")
 		return true
 	}
 
