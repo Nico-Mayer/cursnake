@@ -48,8 +48,8 @@ func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameStat
 
 func (s *InGameState) Draw(screen tcell.Screen) {
 	screen.Clear()
-	utils.DrawText(1, 1, "Score: "+strconv.Itoa(s.score), screen, tcell.ColorWhite)
 	drawCheckerboard(screen)
+	utils.DrawText(1, 1, "Score: "+strconv.Itoa(s.score), screen, tcell.ColorWhite)
 	s.snakeBody.Render(screen)
 	s.fruit.Render(screen)
 	screen.Show()
