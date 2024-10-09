@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"math/rand"
+
 	"github.com/gdamore/tcell"
 )
 
@@ -24,4 +26,8 @@ func Clamp(min, value, max int) int {
 		return max
 	}
 	return value
+}
+
+func RandRange(min, max int) int {
+	return rand.Intn(max-min) + min
 }

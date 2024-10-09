@@ -1,10 +1,9 @@
 package fruit
 
 import (
-	"math/rand"
-
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/internal/geometry"
+	"github.com/nico-mayer/cursnake/internal/utils"
 	"github.com/nico-mayer/cursnake/snake"
 )
 
@@ -37,17 +36,10 @@ func NewFruitCollection(size int, sb *snake.SnakeBody, screen tcell.Screen) *Fru
 }
 
 func newFruit(screen tcell.Screen, invalidPoints []geometry.Point) *Fruit {
-	width, height := screen.Size()
-	xPos := rand.Intn(width)
-	yPos := rand.Intn(height)
-
-	for checkIfInvalid(xPos, yPos, invalidPoints) {
-		xPos = rand.Intn(width)
-		yPos = rand.Intn(height)
-	}
+	x, y := generateNewPos(screen, invalidPoints)
 
 	return &Fruit{
-		Position: geometry.Point{X: xPos, Y: yPos},
+		Position: geometry.Point{X: x, Y: y},
 		Style:    tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorRed),
 	}
 }
@@ -76,17 +68,22 @@ func (fc *FruitCollection) CheckCollision(snakeHead geometry.Point) (bool, *Frui
 }
 
 func (f *Fruit) Respawn(screen tcell.Screen, invalidPoints []geometry.Point) {
+	x, y := generateNewPos(screen, invalidPoints)
+
+	f.Position.X = x
+	f.Position.Y = y
+}
+
+func generateNewPos(screen tcell.Screen, invalidPoints []geometry.Point) (x, y int) {
 	width, height := screen.Size()
-	xPos := rand.Intn(width)
-	yPos := rand.Intn(height)
+	x = utils.RandRange(1, width-1)
+	y = utils.RandRange(1, height-1)
 
-	for checkIfInvalid(xPos, yPos, invalidPoints) {
-		xPos = rand.Intn(width)
-		yPos = rand.Intn(height)
+	for checkIfInvalid(x, y, invalidPoints) {
+		x = utils.RandRange(1, width-1)
+		y = utils.RandRange(1, height-1)
 	}
-
-	f.Position.X = xPos
-	f.Position.Y = yPos
+	return x, y
 }
 
 func checkIfInvalid(x, y int, invalidPoints []geometry.Point) bool {
@@ -95,6 +92,5 @@ func checkIfInvalid(x, y int, invalidPoints []geometry.Point) bool {
 			return true
 		}
 	}
-
 	return false
 }
