@@ -20,7 +20,7 @@ type InGameState struct {
 }
 
 func NewInGameState(screen tcell.Screen) *InGameState {
-	snakeBody := snake.NewSnakeBody(5, 10, 170)
+	snakeBody := snake.NewSnakeBody(5, 10, 4)
 	fruitsCollection := fruit.NewFruitCollection(settings.GetSettings().NumberOfFruits, snakeBody, screen)
 
 	return &InGameState{

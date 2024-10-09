@@ -1,6 +1,7 @@
 package snake
 
 import (
+	"math"
 	"time"
 
 	"github.com/gdamore/tcell"
@@ -88,21 +89,35 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 }
 
 func (sb *SnakeBody) Render(screen tcell.Screen) {
-	background, _ := utils.HexColorToInt32(settings.GetSettings().SnakeBodyOptions.Background)
+	background, err := utils.HexColorToInt32(settings.GetSettings().SnakeBodyOptions.Background)
+	if err != nil {
+		background, _ = utils.HexColorToInt32(settings.GetDefaultSettings().SnakeBodyOptions.Background)
+	}
+	foreground, err := utils.HexColorToInt32(settings.GetSettings().SnakeBodyOptions.Foreground)
+	if err != nil {
+		foreground, _ = utils.HexColorToInt32(settings.GetDefaultSettings().SnakeBodyOptions.Foreground)
+	}
 
 	totalParts := len(sb.Parts)
 
 	for i, part := range sb.Parts {
 		reversedIndex := int32(totalParts - 1 - i)
+		renderSymbol := settings.GetSettings().SnakeBodyOptions.BodyRune
+		if i == totalParts-1 {
+			renderSymbol = settings.GetSettings().SnakeBodyOptions.HeadRune
+		}
+		if len(renderSymbol) == 0 {
+			renderSymbol = " "
+		}
 
 		r, g, b := tcell.NewHexColor(background).RGB()
 
-		r = int32(utils.Clamp(80, int(r-(reversedIndex*2)), 255))
-		g = int32(utils.Clamp(80, int(g-(reversedIndex*2)), 255))
-		b = int32(utils.Clamp(80, int(b-(reversedIndex*2)), 255))
+		r = int32(utils.Clamp(int(math.Max(0, float64(r-150))), int(r-(reversedIndex*2)), int(r)))
+		g = int32(utils.Clamp(int(math.Max(0, float64(g-150))), int(g-(reversedIndex*2)), int(g)))
+		b = int32(utils.Clamp(int(math.Max(0, float64(b-150))), int(b-(reversedIndex*2)), int(b)))
 
-		screen.SetContent(part.X, part.Y, ' ', nil,
-			tcell.StyleDefault.Background(tcell.NewRGBColor(r, g, b)))
+		screen.SetContent(part.X, part.Y, rune(renderSymbol[0]), nil,
+			tcell.StyleDefault.Background(tcell.NewRGBColor(r, g, b)).Foreground(tcell.NewHexColor(foreground)))
 	}
 }
 

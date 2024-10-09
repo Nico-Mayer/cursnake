@@ -22,18 +22,25 @@ type CursnakeSettings struct {
 }
 
 type SnakeBodyOptions struct {
+	HeadRune   string `json:"headRune"`
+	BodyRune   string `json:"bodyRune"`
 	Foreground string `json:"foreground"`
 	Background string `json:"background"`
 }
 
 var settings *CursnakeSettings
+var defaultSettings *CursnakeSettings
 
 func init() {
 	settings = newCursnakeSettings()
+	defaultSettings = loadDefaultSetting()
 }
 
 func GetSettings() *CursnakeSettings {
 	return settings
+}
+func GetDefaultSettings() *CursnakeSettings {
+	return defaultSettings
 }
 
 func newCursnakeSettings() *CursnakeSettings {
@@ -77,6 +84,16 @@ func loadUserSettings() []byte {
 		return defaultSettingsData
 	}
 	return userSettingsFile
+}
+
+func loadDefaultSetting() *CursnakeSettings {
+	var settings *CursnakeSettings
+
+	if err := json.Unmarshal(defaultSettingsData, &settings); err != nil {
+		log.Fatalf("Error unmarshalling into struct: %v", err)
+	}
+
+	return settings
 }
 
 func mergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
