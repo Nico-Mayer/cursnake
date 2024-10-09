@@ -5,6 +5,7 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/internal/geometry"
+	"github.com/nico-mayer/cursnake/settings"
 	"github.com/nico-mayer/cursnake/sound"
 )
 
@@ -73,7 +74,10 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 	}
 
 	head := sb.Parts[len(sb.Parts)-1]
-	newHead := head.Add(sb.Direction).Mod(width, height)
+	newHead := head.Add(sb.Direction)
+	if settings.GetSettings().OpenWalls {
+		newHead = newHead.Mod(width, height)
+	}
 	sb.Parts = append(sb.Parts, newHead)
 	sb.lastMove -= sb.movementDelay
 
@@ -97,13 +101,28 @@ func (sb *SnakeBody) Render(screen tcell.Screen) {
 }
 
 func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
-	head := sb.Parts[len(sb.Parts)-1]
+	head := sb.GetHead()
 	body := sb.Parts[:len(sb.Parts)-1]
 
 	for _, part := range body {
 		if part == head {
 			return true
 		}
+	}
+
+	return false
+}
+
+func (sb *SnakeBody) CheckWallCollision(screen tcell.Screen) (collided bool) {
+	if settings.GetSettings().OpenWalls {
+		return false
+	}
+
+	width, height := screen.Size()
+	head := sb.GetHead()
+
+	if head.X > width-1 || head.X < 1 || head.Y > height-1 || head.Y < 1 {
+		return true
 	}
 
 	return false

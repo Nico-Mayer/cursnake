@@ -45,7 +45,7 @@ func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameStat
 		fruit.Respawn(screen, invalidPoints)
 	}
 
-	gameOver := s.snakeBody.CheckSelfCollision()
+	gameOver := s.snakeBody.CheckSelfCollision() || s.snakeBody.CheckWallCollision(screen)
 	if gameOver {
 		newState := NewGameOverState()
 		return newState, true
@@ -61,6 +61,7 @@ func (s *InGameState) Draw(screen tcell.Screen) {
 	utils.DrawText(1, 1, "Score: "+strconv.Itoa(s.score), screen, tcell.ColorWhite)
 	s.snakeBody.Render(screen)
 	s.fruitsCollection.Render(screen)
+	drawGameBorder(screen)
 	screen.Show()
 }
 
@@ -88,5 +89,30 @@ func drawCheckerboard(screen tcell.Screen) {
 				screen.SetContent(x, y, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(20, 20, 20)))
 			}
 		}
+	}
+}
+
+func drawGameBorder(screen tcell.Screen) {
+	if settings.GetSettings().OpenWalls {
+		return
+	}
+	width, height := screen.Size()
+	borderStyle := tcell.StyleDefault.Background(tcell.ColorGray)
+
+	// Draw top border
+	for x := 0; x < width; x++ {
+		screen.SetContent(x, 0, ' ', nil, borderStyle)
+	}
+	// Draw bottom border
+	for x := 0; x < width; x++ {
+		screen.SetContent(x, height-1, ' ', nil, borderStyle)
+	}
+	// Draw left border
+	for y := 0; y < height; y++ {
+		screen.SetContent(0, y, ' ', nil, borderStyle)
+	}
+	// Draw right border
+	for y := 0; y < height; y++ {
+		screen.SetContent(width-1, y, ' ', nil, borderStyle)
 	}
 }
