@@ -7,6 +7,7 @@ import (
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/fruit"
 	"github.com/nico-mayer/cursnake/internal/utils"
+	"github.com/nico-mayer/cursnake/settings"
 	"github.com/nico-mayer/cursnake/snake"
 )
 
@@ -48,6 +49,7 @@ func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) (GameStat
 func (s *InGameState) Draw(screen tcell.Screen) {
 	screen.Clear()
 	utils.DrawText(1, 1, "Score: "+strconv.Itoa(s.score), screen, tcell.ColorWhite)
+	drawCheckerboard(screen)
 	s.snakeBody.Render(screen)
 	s.fruit.Render(screen)
 	screen.Show()
@@ -62,5 +64,20 @@ func (s *InGameState) HandleInput(event *tcell.EventKey) {
 		s.snakeBody.Left()
 	} else if event.Key() == tcell.KeyRight || event.Rune() == 'd' {
 		s.snakeBody.Right()
+	}
+}
+
+func drawCheckerboard(screen tcell.Screen) {
+	if !settings.GetSettings().CheckerboardBackground {
+		return
+	}
+	width, height := screen.Size()
+
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			if (x+y)%2 == 0 {
+				screen.SetContent(x, y, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(10, 10, 10)))
+			}
+		}
 	}
 }

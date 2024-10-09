@@ -7,16 +7,13 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/gamestate"
+	"github.com/nico-mayer/cursnake/settings"
 )
 
 type Cursnake struct {
 	screen           tcell.Screen
 	currentGameState gamestate.GameState
 }
-
-const (
-	targetFPS = time.Second / 60
-)
 
 func main() {
 	screen, err := tcell.NewScreen()
@@ -67,6 +64,6 @@ func (cursnake *Cursnake) Run() {
 		// Draw
 		cursnake.currentGameState.Draw(cursnake.screen)
 
-		time.Sleep(targetFPS)
+		time.Sleep(settings.GetSettings().FrameRate)
 	}
 }

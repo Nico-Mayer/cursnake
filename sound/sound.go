@@ -9,6 +9,7 @@ import (
 
 	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
+	"github.com/nico-mayer/cursnake/settings"
 )
 
 type SoundManager struct {
@@ -47,6 +48,10 @@ func newSoundManager() *SoundManager {
 }
 
 func (sm *SoundManager) Play(fileName string) {
+	if !settings.GetSettings().Sound {
+		return
+	}
+
 	data, err := soundFiles.ReadFile("sounds/" + fileName)
 	if err != nil {
 		panic("reading my-file.mp3 failed: " + err.Error())
