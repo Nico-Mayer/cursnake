@@ -5,6 +5,7 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/internal/geometry"
+	"github.com/nico-mayer/cursnake/sound"
 )
 
 type SnakeBody struct {
@@ -102,5 +103,11 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 func (sb *SnakeBody) CheckFruitCollision(fruitPos geometry.Point) (eaten bool) {
 	head := sb.Parts[len(sb.Parts)-1]
 
-	return head == fruitPos
+	if head == fruitPos {
+		sb := sound.GetManager()
+		go sb.Play("gunshot.mp3")
+		return true
+	}
+
+	return false
 }
