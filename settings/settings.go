@@ -3,6 +3,7 @@ package settings
 import (
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -44,7 +45,6 @@ func GetDefaultSettings() *CursnakeSettings {
 }
 
 func newCursnakeSettings() *CursnakeSettings {
-
 	userSettingsFile := loadUserSettings()
 
 	var data1, data2 map[string]interface{}
@@ -78,9 +78,15 @@ func newCursnakeSettings() *CursnakeSettings {
 }
 
 func loadUserSettings() []byte {
-	userSettingsPath := filepath.Join(os.Getenv("HOME"), ".config", "cursnake", "settings.json")
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return defaultSettingsData
+	}
+	userSettingsPath := filepath.Join(homeDir, ".config", "cursnake", "settings.json")
 	userSettingsFile, err := os.ReadFile(userSettingsPath)
 	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
 		return defaultSettingsData
 	}
 	return userSettingsFile
@@ -91,6 +97,12 @@ func loadDefaultSetting() *CursnakeSettings {
 
 	if err := json.Unmarshal(defaultSettingsData, &settings); err != nil {
 		log.Fatalf("Error unmarshalling into struct: %v", err)
+	}
+
+	// Windows-specific defaults
+	if runtime.GOOS == "windows" {
+		settings.CheckerboardBackground = false
+		settings.TargetFPS = 25
 	}
 
 	return settings
