@@ -8,10 +8,12 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 )
 
 //go:embed default-settings.json
 var defaultSettingsData []byte
+var once sync.Once
 
 type CursnakeSettings struct {
 	TargetFPS              int              `json:"targetFPS"`
@@ -33,8 +35,10 @@ var settings *CursnakeSettings
 var defaultSettings *CursnakeSettings
 
 func init() {
-	settings = newCursnakeSettings()
-	defaultSettings = loadDefaultSetting()
+	once.Do(func() {
+		settings = newCursnakeSettings()
+		defaultSettings = loadDefaultSetting()
+	})
 }
 
 func GetSettings() *CursnakeSettings {

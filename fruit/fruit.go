@@ -4,6 +4,7 @@ import (
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/internal/geometry"
 	"github.com/nico-mayer/cursnake/internal/utils"
+	"github.com/nico-mayer/cursnake/settings"
 	"github.com/nico-mayer/cursnake/snake"
 )
 
@@ -75,13 +76,18 @@ func (f *Fruit) Respawn(screen tcell.Screen, invalidPoints []geometry.Point) {
 }
 
 func generateNewPos(screen tcell.Screen, invalidPoints []geometry.Point) (x, y int) {
+	offset := 2
+	if settings.GetSettings().OpenWalls {
+		offset = 1
+	}
+
 	width, height := screen.Size()
-	x = utils.RandRange(1, width-1)
-	y = utils.RandRange(1, height-1)
+	x = utils.RandRange(offset, width-offset)
+	y = utils.RandRange(offset, height-offset)
 
 	for checkIfInvalid(x, y, invalidPoints) {
-		x = utils.RandRange(1, width-1)
-		y = utils.RandRange(1, height-1)
+		x = utils.RandRange(offset, width-offset)
+		y = utils.RandRange(offset, height-offset)
 	}
 	return x, y
 }

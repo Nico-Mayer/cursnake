@@ -142,7 +142,7 @@ func (sb *SnakeBody) CheckWallCollision(screen tcell.Screen) (collided bool) {
 	width, height := screen.Size()
 	head := sb.GetHead()
 
-	if head.X > width-1 || head.X < 1 || head.Y > height-1 || head.Y < 1 {
+	if head.X >= width-1 || head.X < 1 || head.Y >= height-1 || head.Y < 1 {
 		return true
 	}
 
