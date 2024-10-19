@@ -1,10 +1,11 @@
 {
   "targetFps": 144,
-  "mute": true,
+  "mute": false,
   "checkerboardBackground": true,
-  "numberOfFruits": 1,
+  "numberOfFruits": 3,
   "openWalls": true,
   "snakeBody": {
+    "startLength": 3,
     "headRune": " ",
     "bodyRune": " ",
     "foreground": "#fff000",

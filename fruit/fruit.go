@@ -1,6 +1,8 @@
 package fruit
 
 import (
+	"math"
+
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/internal/geometry"
 	"github.com/nico-mayer/cursnake/internal/utils"
@@ -18,6 +20,11 @@ type Fruit struct {
 }
 
 func NewFruitCollection(size int, sb *snake.SnakeBody, screen tcell.Screen) *FruitCollection {
+	width, height := screen.Size()
+	maxPossibleFruits := (width * height) / 4
+
+	size = int(math.Min(float64(maxPossibleFruits), float64(size)))
+
 	var fruits []*Fruit
 
 	var invalidPoints []geometry.Point

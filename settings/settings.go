@@ -25,10 +25,11 @@ type CursnakeSettings struct {
 }
 
 type SnakeBodyOptions struct {
-	HeadRune   string `json:"headRune"`
-	BodyRune   string `json:"bodyRune"`
-	Foreground string `json:"foreground"`
-	Background string `json:"background"`
+	StartLength int    `json:"startLength"`
+	HeadRune    string `json:"headRune"`
+	BodyRune    string `json:"bodyRune"`
+	Foreground  string `json:"foreground"`
+	Background  string `json:"background"`
 }
 
 var settings *CursnakeSettings
