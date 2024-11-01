@@ -66,13 +66,13 @@ func (s *InGameState) Draw(screen tcell.Screen) {
 }
 
 func (s *InGameState) HandleInput(event *tcell.EventKey) {
-	if event.Key() == tcell.KeyUp || event.Rune() == 'w' {
+	if event.Key() == tcell.KeyUp || event.Rune() == 'w' || event.Rune() == 'k' {
 		s.snakeBody.Up()
-	} else if event.Key() == tcell.KeyDown || event.Rune() == 's' {
+	} else if event.Key() == tcell.KeyDown || event.Rune() == 's' || event.Rune() == 'j' {
 		s.snakeBody.Down()
-	} else if event.Key() == tcell.KeyLeft || event.Rune() == 'a' {
+	} else if event.Key() == tcell.KeyLeft || event.Rune() == 'a' || event.Rune() == 'h' {
 		s.snakeBody.Left()
-	} else if event.Key() == tcell.KeyRight || event.Rune() == 'd' {
+	} else if event.Key() == tcell.KeyRight || event.Rune() == 'd' || event.Rune() == 'l' {
 		s.snakeBody.Right()
 	}
 }

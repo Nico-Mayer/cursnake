@@ -1,5 +1,5 @@
 {
-    "targetFps": 144,
+    "targetFps": 60,
     "mute": false,
     "volume": 50,
     "checkerboardBackground": true,
