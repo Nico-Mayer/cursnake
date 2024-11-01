@@ -18,6 +18,7 @@ var once sync.Once
 type CursnakeSettings struct {
 	TargetFPS              int              `json:"targetFPS"`
 	Mute                   bool             `json:"mute"`
+	Volume                 int              `json:"volume"`
 	CheckerboardBackground bool             `json:"checkerboardBackground"`
 	NumberOfFruits         int              `json:"numberOfFruits"`
 	OpenWalls              bool             `json:"openWalls"`

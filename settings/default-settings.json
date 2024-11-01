@@ -1,14 +1,15 @@
 {
-  "targetFps": 144,
-  "mute": false,
-  "checkerboardBackground": true,
-  "numberOfFruits": 3,
-  "openWalls": true,
-  "snakeBody": {
-    "startLength": 3,
-    "headRune": " ",
-    "bodyRune": " ",
-    "foreground": "#fff000",
-    "background": "#1DF529"
-  }
+    "targetFps": 144,
+    "mute": false,
+    "volume": 50,
+    "checkerboardBackground": true,
+    "numberOfFruits": 3,
+    "openWalls": true,
+    "snakeBody": {
+        "startLength": 3,
+        "headRune": " ",
+        "bodyRune": " ",
+        "foreground": "#fff000",
+        "background": "#1DF529"
+    }
 }

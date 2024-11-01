@@ -63,7 +63,7 @@ func (sm *SoundManager) Play(fileName string) {
 	}
 	player := sm.context.NewPlayer(decodedMp3)
 	defer player.Close()
-
+	player.SetVolume(float64(settings.GetSettings().Volume) / 100)
 	player.Play()
 	for player.IsPlaying() {
 		time.Sleep(time.Microsecond)
