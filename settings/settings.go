@@ -92,7 +92,6 @@ func loadUserSettings() []byte {
 	userSettingsFile, err := os.ReadFile(userSettingsPath)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(0)
 		return defaultSettingsData
 	}
 	return userSettingsFile
