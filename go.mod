@@ -1,6 +1,6 @@
 module github.com/nico-mayer/cursnake
 
-go 1.23.2
+go 1.24.2
 
 require (
 	github.com/ebitengine/oto/v3 v3.3.1
