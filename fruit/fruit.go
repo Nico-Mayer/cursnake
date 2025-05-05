@@ -33,7 +33,7 @@ func NewFruitCollection(size int, sb *snake.SnakeBody, screen tcell.Screen) *Fru
 		invalidPoints = append(invalidPoints, part)
 	}
 
-	for i := 0; i < size; i++ {
+	for i := range size {
 		fruits = append(fruits, newFruit(screen, invalidPoints))
 		invalidPoints = append(invalidPoints, fruits[i].Position)
 	}
@@ -58,7 +58,7 @@ func (fc *FruitCollection) Render(screen tcell.Screen) {
 	}
 }
 
-func (fc *FruitCollection) FruitPositions() []geometry.Point {
+func (fc *FruitCollection) GetFruitPositions() []geometry.Point {
 	var positions []geometry.Point
 	for _, fruit := range fc.Fruits {
 		positions = append(positions, fruit.Position)
@@ -84,7 +84,7 @@ func (f *Fruit) Respawn(screen tcell.Screen, invalidPoints []geometry.Point) {
 
 func generateNewPos(screen tcell.Screen, invalidPoints []geometry.Point) (x, y int) {
 	offset := 2
-	if settings.GetSettings().OpenWalls {
+	if settings.Get().Wraparound {
 		offset = 1
 	}
 

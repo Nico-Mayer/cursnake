@@ -1,12 +1,13 @@
 package gamestate
 
 import (
+	"slices"
 	"strconv"
 	"time"
+	"unicode"
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/fruit"
-	"github.com/nico-mayer/cursnake/internal/geometry"
 	"github.com/nico-mayer/cursnake/internal/utils"
 	"github.com/nico-mayer/cursnake/settings"
 	"github.com/nico-mayer/cursnake/snake"
@@ -20,8 +21,8 @@ type InGameState struct {
 }
 
 func NewInGameState(screen tcell.Screen) *InGameState {
-	snakeBody := snake.NewSnakeBody(5, 10, settings.GetSettings().SnakeBodyOptions.StartLength)
-	fruitsCollection := fruit.NewFruitCollection(settings.GetSettings().NumberOfFruits, snakeBody, screen)
+	snakeBody := snake.NewSnakeBody(5, 10, settings.Get().SnakeBodyOptions.StartLength)
+	fruitsCollection := fruit.NewFruitCollection(settings.Get().NumberOfFruits, snakeBody, screen)
 
 	return &InGameState{
 		score:            0,
@@ -38,10 +39,11 @@ func (s *InGameState) Update(delta time.Duration, screen tcell.Screen) GameState
 		s.score += 10
 		sb := sound.GetManager()
 		go sb.Play("pick.mp3")
-		invalidPoints := append(
-			append([]geometry.Point{}, s.snakeBody.Parts...),
-			s.fruitsCollection.FruitPositions()...,
-		)
+		invalidPoints := slices.Concat(s.snakeBody.Parts, s.fruitsCollection.GetFruitPositions())
+		// invalidPoints := append(
+		// 	append([]geometry.Point{}, s.snakeBody.Parts...),
+		// 	s.fruitsCollection.FruitPositions()...,
+		// )
 		fruit.Respawn(screen, invalidPoints)
 	}
 
@@ -66,25 +68,28 @@ func (s *InGameState) Draw(screen tcell.Screen) {
 }
 
 func (s *InGameState) HandleInput(event *tcell.EventKey) {
-	if event.Key() == tcell.KeyUp || event.Rune() == 'w' || event.Rune() == 'k' {
+	char := unicode.ToLower(event.Rune())
+	key := event.Key()
+
+	if key == tcell.KeyUp || char == 'w' || char == 'k' {
 		s.snakeBody.Up()
-	} else if event.Key() == tcell.KeyDown || event.Rune() == 's' || event.Rune() == 'j' {
+	} else if key == tcell.KeyDown || char == 's' || char == 'j' {
 		s.snakeBody.Down()
-	} else if event.Key() == tcell.KeyLeft || event.Rune() == 'a' || event.Rune() == 'h' {
+	} else if key == tcell.KeyLeft || char == 'a' || char == 'h' {
 		s.snakeBody.Left()
-	} else if event.Key() == tcell.KeyRight || event.Rune() == 'd' || event.Rune() == 'l' {
+	} else if key == tcell.KeyRight || char == 'd' || char == 'l' {
 		s.snakeBody.Right()
 	}
 }
 
 func drawCheckerboard(screen tcell.Screen) {
-	if !settings.GetSettings().CheckerboardBackground {
+	if !settings.Get().CheckerboardBackground {
 		return
 	}
 	width, height := screen.Size()
 
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
+	for x := range width {
+		for y := range height {
 			if (x+y)%2 == 0 {
 				screen.SetContent(x, y, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(20, 20, 20)))
 			}
@@ -93,26 +98,29 @@ func drawCheckerboard(screen tcell.Screen) {
 }
 
 func drawGameBorder(screen tcell.Screen) {
-	if settings.GetSettings().OpenWalls {
-		return
-	}
 	width, height := screen.Size()
-	borderStyle := tcell.StyleDefault.Background(tcell.ColorGray)
+	borderStyle := tcell.StyleDefault.Background(tcell.ColorDefault)
 
 	// Draw top border
-	for x := 0; x < width; x++ {
-		screen.SetContent(x, 0, ' ', nil, borderStyle)
+	for x := range width {
+		screen.SetContent(x, 0, '─', nil, borderStyle)
 	}
 	// Draw bottom border
-	for x := 0; x < width; x++ {
-		screen.SetContent(x, height-1, ' ', nil, borderStyle)
+	for x := range width {
+		screen.SetContent(x, height-1, '─', nil, borderStyle)
 	}
 	// Draw left border
-	for y := 0; y < height; y++ {
-		screen.SetContent(0, y, ' ', nil, borderStyle)
+	for y := range height {
+		screen.SetContent(0, y, '│', nil, borderStyle)
 	}
 	// Draw right border
-	for y := 0; y < height; y++ {
-		screen.SetContent(width-1, y, ' ', nil, borderStyle)
+	for y := range height {
+		screen.SetContent(width-1, y, '│', nil, borderStyle)
 	}
+
+	// Draw corners
+	screen.SetContent(0, 0, '┌', nil, borderStyle)              // Top-left
+	screen.SetContent(width-1, 0, '┐', nil, borderStyle)        // Top-right
+	screen.SetContent(0, height-1, '└', nil, borderStyle)       // Bottom-left
+	screen.SetContent(width-1, height-1, '┘', nil, borderStyle) // Bottom-right
 }

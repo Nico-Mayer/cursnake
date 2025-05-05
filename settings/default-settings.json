@@ -4,7 +4,7 @@
     "volume": 50,
     "checkerboardBackground": true,
     "numberOfFruits": 3,
-    "openWalls": true,
+    "wraparound": true,
     "snakeBody": {
         "startLength": 3,
         "headRune": " ",

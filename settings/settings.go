@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"maps"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -21,7 +22,7 @@ type CursnakeSettings struct {
 	Volume                 int              `json:"volume"`
 	CheckerboardBackground bool             `json:"checkerboardBackground"`
 	NumberOfFruits         int              `json:"numberOfFruits"`
-	OpenWalls              bool             `json:"openWalls"`
+	Wraparound             bool             `json:"wraparound"`
 	SnakeBodyOptions       SnakeBodyOptions `json:"snakeBody"`
 }
 
@@ -43,7 +44,7 @@ func init() {
 	})
 }
 
-func GetSettings() *CursnakeSettings {
+func Get() *CursnakeSettings {
 	return settings
 }
 func GetDefaultSettings() *CursnakeSettings {
@@ -53,7 +54,7 @@ func GetDefaultSettings() *CursnakeSettings {
 func newCursnakeSettings() *CursnakeSettings {
 	userSettingsFile := loadUserSettings()
 
-	var data1, data2 map[string]interface{}
+	var data1, data2 map[string]any
 
 	if err := json.Unmarshal(defaultSettingsData, &data1); err != nil {
 		log.Fatalf("Error unmarshalling file1: %v", err)
@@ -113,9 +114,7 @@ func loadDefaultSetting() *CursnakeSettings {
 	return settings
 }
 
-func mergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
-	for k, v := range map2 {
-		map1[k] = v
-	}
+func mergeMaps(map1, map2 map[string]any) map[string]any {
+	maps.Copy(map1, map2)
 	return map1
 }

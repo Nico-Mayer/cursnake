@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"unicode"
 
 	"github.com/gdamore/tcell"
 	"github.com/nico-mayer/cursnake/gamestate"
@@ -37,7 +38,7 @@ func main() {
 		case *tcell.EventResize:
 			cursnake.screen.Sync()
 		case *tcell.EventKey:
-			if event.Key() == tcell.KeyEscape || event.Key() == tcell.KeyCtrlC {
+			if event.Key() == tcell.KeyEscape || event.Key() == tcell.KeyCtrlC || unicode.ToLower(event.Rune()) == 'q' {
 				screen.Fini()
 				os.Exit(0)
 			}
@@ -47,7 +48,7 @@ func main() {
 }
 
 func (cursnake *Cursnake) Run() {
-	frameTime := time.Second / time.Duration(settings.GetSettings().TargetFPS)
+	frameTime := time.Second / time.Duration(settings.Get().TargetFPS)
 	lastUpdate := time.Now()
 
 	// Gameloop

@@ -18,3 +18,10 @@ func (p Point) Mod(width, height int) Point {
 		Y: (p.Y + height) % height,
 	}
 }
+
+func (p Point) Sub(p2 Point) Point {
+	return Point{
+		X: p.X - p2.X,
+		Y: p.Y - p2.Y,
+	}
+}

@@ -2,6 +2,7 @@ package snake
 
 import (
 	"math"
+	"slices"
 	"time"
 
 	"github.com/gdamore/tcell"
@@ -77,8 +78,10 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 
 	head := sb.Parts[len(sb.Parts)-1]
 	newHead := head.Add(sb.Direction)
-	if settings.GetSettings().OpenWalls {
-		newHead = newHead.Mod(width, height)
+	if settings.Get().Wraparound {
+		innerWidth := width - 2
+		innerHeight := height - 2
+		newHead = newHead.Sub(geometry.Point{X: 1, Y: 1}).Mod(innerWidth, innerHeight).Add(geometry.Point{X: 1, Y: 1})
 	}
 	sb.Parts = append(sb.Parts, newHead)
 	sb.lastMove -= sb.movementDelay
@@ -89,11 +92,11 @@ func (sb *SnakeBody) Update(delta time.Duration, width, height int, grow bool) {
 }
 
 func (sb *SnakeBody) Render(screen tcell.Screen) {
-	background, err := utils.HexColorToInt32(settings.GetSettings().SnakeBodyOptions.Background)
+	background, err := utils.HexColorToInt32(settings.Get().SnakeBodyOptions.Background)
 	if err != nil {
 		background, _ = utils.HexColorToInt32(settings.GetDefaultSettings().SnakeBodyOptions.Background)
 	}
-	foreground, err := utils.HexColorToInt32(settings.GetSettings().SnakeBodyOptions.Foreground)
+	foreground, err := utils.HexColorToInt32(settings.Get().SnakeBodyOptions.Foreground)
 	if err != nil {
 		foreground, _ = utils.HexColorToInt32(settings.GetDefaultSettings().SnakeBodyOptions.Foreground)
 	}
@@ -102,9 +105,9 @@ func (sb *SnakeBody) Render(screen tcell.Screen) {
 
 	for i, part := range sb.Parts {
 		reversedIndex := int32(totalParts - 1 - i)
-		renderSymbol := settings.GetSettings().SnakeBodyOptions.BodyRune
+		renderSymbol := settings.Get().SnakeBodyOptions.BodyRune
 		if i == totalParts-1 {
-			renderSymbol = settings.GetSettings().SnakeBodyOptions.HeadRune
+			renderSymbol = settings.Get().SnakeBodyOptions.HeadRune
 		}
 		if len(renderSymbol) == 0 {
 			renderSymbol = " "
@@ -125,24 +128,22 @@ func (sb *SnakeBody) CheckSelfCollision() (collided bool) {
 	head := sb.GetHead()
 	body := sb.Parts[:len(sb.Parts)-1]
 
-	for _, part := range body {
-		if part == head {
-			return true
-		}
+	if slices.Contains(body, head) {
+		return true
 	}
 
 	return false
 }
 
 func (sb *SnakeBody) CheckWallCollision(screen tcell.Screen) (collided bool) {
-	if settings.GetSettings().OpenWalls {
+	if settings.Get().Wraparound {
 		return false
 	}
-
+	offset := 1
 	width, height := screen.Size()
 	head := sb.GetHead()
 
-	if head.X >= width-1 || head.X < 1 || head.Y >= height-1 || head.Y < 1 {
+	if head.X >= width-offset || head.X < offset || head.Y >= height-offset || head.Y < offset {
 		return true
 	}
 
